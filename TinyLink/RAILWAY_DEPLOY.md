@@ -132,24 +132,26 @@ After your app is deployed, you need to create the database tables:
 - Redeploy after adding new environment variables
 - Check variable names match exactly (case-sensitive)
 
-## Railway Configuration File
+## Railway Configuration Files
 
-Railway will auto-detect Next.js, but you can create a `railway.json` file for custom configuration:
+The project includes configuration files to help Railway build correctly:
 
-```json
-{
-  "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "npm run build"
-  },
-  "deploy": {
-    "startCommand": "npm start",
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
-}
-```
+### railway.json
+Specifies build and deploy commands for Railway.
+
+### nixpacks.toml
+Nixpacks configuration that explicitly tells Railway how to build the app:
+- Uses Node.js 18
+- Runs `npm ci` to install dependencies
+- Runs `npm run build` to build the Next.js app
+- Starts with `npm start`
+
+### .nvmrc
+Specifies Node.js version (18) for consistency.
+
+If Railway still can't detect the build, you can manually set:
+- **Build Command**: `npm run build`
+- **Start Command**: `npm start`
 
 ## Useful Railway Commands
 
