@@ -3,8 +3,12 @@ const mysql = require('mysql2/promise');
 let pool = null;
 
 async function getConnection() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set. Please create a .env.local file with DATABASE_URL=mysql://username:password@localhost:3306/tinylink');
+  // Check for DATABASE_URL or individual env vars
+  const hasDatabaseConfig = process.env.DATABASE_URL || 
+    (process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME);
+  
+  if (!hasDatabaseConfig) {
+    throw new Error('Database configuration not found. Please set DATABASE_URL or DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME environment variables.');
   }
 
   if (!pool) {
