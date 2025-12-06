@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const { code } = await params;
+    const { code } = params;
     
     if (!code) {
       return NextResponse.redirect(new URL('/not-found', request.url));

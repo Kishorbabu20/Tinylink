@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request, { params }) {
   try {
-    const { code } = await params;
+    const { code } = params;
     
     // Get the link
     const link = await getLinkByCode(code);

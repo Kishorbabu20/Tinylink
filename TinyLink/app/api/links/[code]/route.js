@@ -3,7 +3,7 @@ import { getLinkByCode, deleteLinkByCode } from '../../../../lib/db';
 
 export async function GET(request, { params }) {
   try {
-    const { code } = await params;
+    const { code } = params;
     const link = await getLinkByCode(code);
     if (!link) {
       return NextResponse.json({ error: 'Link not found' }, { status: 404 });
@@ -17,7 +17,7 @@ export async function GET(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const { code } = await params;
+    const { code } = params;
     const deletedLink = await deleteLinkByCode(code);
     if (!deletedLink) {
       return NextResponse.json({ error: 'Link not found' }, { status: 404 });
