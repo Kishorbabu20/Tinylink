@@ -53,10 +53,22 @@ export async function POST(request) {
     return NextResponse.json(link, { status: 201 });
   } catch (error) {
     console.error('POST /api/links error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error', message: error.message },
-      { status: 500 }
-    );
+    // Provide more detailed error information
+    const errorResponse = {
+      error: 'Internal server error',
+      message: error.message,
+      // Include error code if available (for database errors)
+      ...(error.code && { code: error.code }),
+      // Include helpful hints based on error message
+      hint: error.message.includes('Database configuration not found')
+        ? 'Set DATABASE_URL or DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME environment variables'
+        : error.message.includes('Table "links" does not exist')
+        ? 'Run schema.sql to create the links table'
+        : error.message.includes('Failed to connect')
+        ? 'Check your database connection settings and ensure the database server is running'
+        : 'Check server logs for more details',
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 
@@ -66,9 +78,21 @@ export async function GET() {
     return NextResponse.json(links);
   } catch (error) {
     console.error('GET /api/links error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error', message: error.message },
-      { status: 500 }
-    );
+    // Provide more detailed error information
+    const errorResponse = {
+      error: 'Internal server error',
+      message: error.message,
+      // Include error code if available (for database errors)
+      ...(error.code && { code: error.code }),
+      // Include helpful hints based on error message
+      hint: error.message.includes('Database configuration not found')
+        ? 'Set DATABASE_URL or DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME environment variables'
+        : error.message.includes('Table "links" does not exist')
+        ? 'Run schema.sql to create the links table'
+        : error.message.includes('Failed to connect')
+        ? 'Check your database connection settings and ensure the database server is running'
+        : 'Check server logs for more details',
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

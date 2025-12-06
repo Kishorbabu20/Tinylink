@@ -126,21 +126,35 @@ async function getAllLinks() {
 }
 
 async function getLinkByCode(code) {
-  const db = await getConnection();
-  const query = 'SELECT * FROM links WHERE code = ?';
-  const values = [code];
-  const [rows] = await db.execute(query, values);
-  return rows[0] || null;
+  try {
+    const db = await getConnection();
+    const query = 'SELECT * FROM links WHERE code = ?';
+    const values = [code];
+    const [rows] = await db.execute(query, values);
+    return rows[0] || null;
+  } catch (error) {
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      throw new Error('Table "links" does not exist. Please run schema.sql to create the table.');
+    }
+    throw error;
+  }
 }
 
 async function updateLinkClicks(code) {
-  const db = await getConnection();
-  const query = 'UPDATE links SET clickCount = clickCount + 1, lastClicked = CURRENT_TIMESTAMP WHERE code = ?';
-  const values = [code];
-  await db.execute(query, values);
-  // Fetch the updated record
-  const [rows] = await db.execute('SELECT * FROM links WHERE code = ?', [code]);
-  return rows[0] || null;
+  try {
+    const db = await getConnection();
+    const query = 'UPDATE links SET clickCount = clickCount + 1, lastClicked = CURRENT_TIMESTAMP WHERE code = ?';
+    const values = [code];
+    await db.execute(query, values);
+    // Fetch the updated record
+    const [rows] = await db.execute('SELECT * FROM links WHERE code = ?', [code]);
+    return rows[0] || null;
+  } catch (error) {
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      throw new Error('Table "links" does not exist. Please run schema.sql to create the table.');
+    }
+    throw error;
+  }
 }
 
 async function updateLinkTitle(code, title) {
@@ -162,19 +176,27 @@ async function updateLinkTitle(code, title) {
 }
 
 async function deleteLinkByCode(code) {
-  const db = await getConnection();
-  // First get the record to return
-  const link = await getLinkByCode(code);
-  if (!link) {
-    return null;
+  try {
+    const db = await getConnection();
+    // First get the record to return
+    const link = await getLinkByCode(code);
+    if (!link) {
+      return null;
+    }
+    const query = 'DELETE FROM links WHERE code = ?';
+    const values = [code];
+    await db.execute(query, values);
+    return link;
+  } catch (error) {
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      throw new Error('Table "links" does not exist. Please run schema.sql to create the table.');
+    }
+    throw error;
   }
-  const query = 'DELETE FROM links WHERE code = ?';
-  const values = [code];
-  await db.execute(query, values);
-  return link;
 }
 
 module.exports = {
+  getConnection,
   createLink,
   getAllLinks,
   getLinkByCode,
